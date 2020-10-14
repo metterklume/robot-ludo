@@ -1,0 +1,139 @@
+"""
+Created on Mon Oct 12 14:30:00 2020
+
+@author: abhishekroy
+"""
+
+from dataclasses import dataclass
+import numpy as np
+from copy import deepcopy
+
+@dataclass
+class Board:
+    counters: int #total counters for each side to start
+    length: int   #length of the track
+    safe: list 
+    red: list
+    blue: list
+    redpen: int   #number of counters that are in the 'pen' 
+    bluepen: int  # ==> waiting to come into play
+
+# move is in the form (turn, pos, steps)
+# turn = 0 for red, 1 for blue
+
+def makemove(board, move, copy=True):
+    if not isvalidmove(board, move):
+        print("Invalid move")
+        return board
+    
+    if copy:
+        newboard = deepcopy(board)
+    else:
+        newboard = board
+
+    turn, pos, steps = move
+    L = board.length 
+
+    # Null move
+    if (pos,steps) == (-1,-1):
+        return newboard
+
+    # Special move --> new counter enters from pen    
+    if (pos,steps) == (0,0):
+        if turn == 0:
+            newboard.red[0] += 1
+            newboard.redpen -= 1
+        if turn == 1:
+            newboard.blue[L//2] += 1
+            newboard.bluepen -= 1
+
+    # Regular move --> advance counter by *steps* and cut 
+    # opposite coloured counters at destination unless at safe square.
+    # If home is reached, remove counter from board 
+    elif turn == 0:
+        newpos = pos + steps
+        newboard.red[pos] -= 1
+
+        if newpos != L:
+            newboard.red[newpos] += 1
+        
+            if not newboard.safe[newpos]:
+                newboard.bluepen += newboard.blue[newpos]
+                newboard.blue[newpos] = 0
+    
+    elif turn == 1:
+        newpos = (pos + steps) % L
+        newboard.blue[pos] -= 1
+
+        if newpos != L//2:
+            newboard.blue[newpos] += 1
+        
+            if not newboard.safe[newpos]:
+                newboard.redpen += newboard.red[newpos]
+                newboard.red[newpos] = 0
+        
+    return newboard
+
+def isvalidmove(board, move, maxroll=6):
+    turn, pos, steps = move
+    L, newpos = board.length, pos + steps
+
+    # Null move
+    if (pos,steps) == (-1,-1):
+        return True
+
+    # Special move --> new counter enters from pen    
+    if (pos,steps) == (0,0):
+        if turn == 0 and board.redpen:
+            return True
+        if turn == 1 and board.bluepen:
+            return True
+    
+    # Check if counter present at *pos* and moving will not cross home
+    if turn == 0:
+        if not board.red[pos] or newpos > L:
+            return False
+        
+    if turn == 1:
+        if not board.blue[pos] or (pos < L//2 and pos+steps > L//2) or\
+            (pos > L//2 and newpos > L + L//2):
+            return False
+
+    if pos < 0 or pos >= L or steps<=0 or steps>maxroll:
+        return False
+    
+    return True
+
+def isvalidboard(board):
+    L,r,b,s = board.length,len(board.red),len(board.blue),len(board.safe)
+
+    if (r,b,s) != (L,L,L):
+        return False
+
+    if sum(board.red)>board.counters-board.redpen or \
+        sum(board.blue)>board.counters-board.bluepen:
+        return False
+
+    return True
+
+
+def getmoves(board, turn, roll, maxroll=6):
+    moves = []
+    if roll == maxroll and \
+        ((turn == 0 and board.redpen) or (turn == 1 and board.bluepen)):
+        moves += [(turn,0,0)]
+    
+    if turn == 0:
+        for pos,ctrs in enumerate(board.red):
+            if ctrs and isvalidmove(board,(turn, pos, roll)):
+                moves += [(turn,pos,roll)]
+        
+    if turn == 1:
+        for pos,ctrs in enumerate(board.blue):
+            if ctrs and isvalidmove(board,(turn, pos, roll)):
+                moves += [(turn,pos,roll)]
+
+    if not moves:
+        moves = [(turn,-1,-1)]
+
+    return moves
