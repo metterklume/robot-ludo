@@ -12,16 +12,26 @@ from copy import deepcopy
 class Board:
     counters: int #total counters for each side to start
     length: int   #length of the track
-    safe: list 
-    red: list
-    blue: list
-    redpen: int   #number of counters that are in the 'pen' 
-    bluepen: int  # ==> waiting to come into play
+    
+    # Next 3 arrays have size = *length*
+    safe: list    # 1 if square is safe else 0  
+    red: list     # Red and Blue counters on each square
+    blue: list    
+
+    redpen: int   # number of counters that are in the 'pen' 
+    bluepen: int  # waiting to come into play
 
 # move is in the form (turn, pos, steps)
 # turn = 0 for red, 1 for blue
+# Two special moves:
+# (turn, 0, 0) --> counter moves home from pen
+# (turn, -1, -1) --> Pass
 
 def makemove(board, move, copy=True):
+    '''
+    Make a move on the board. If *copy* then returns copy,
+    else mutates current board.
+    '''
     if not isvalidmove(board, move):
         print("Invalid move")
         return board
@@ -74,7 +84,11 @@ def makemove(board, move, copy=True):
         
     return newboard
 
+
 def isvalidmove(board, move, maxroll=6):
+    '''
+    True if move is valid
+    '''
     turn, pos, steps = move
     L, newpos = board.length, pos + steps
 
@@ -104,7 +118,11 @@ def isvalidmove(board, move, maxroll=6):
     
     return True
 
+
 def isvalidboard(board):
+    '''
+    True if board passes consistency checks
+    '''
     L,r,b,s = board.length,len(board.red),len(board.blue),len(board.safe)
 
     if (r,b,s) != (L,L,L):
@@ -118,6 +136,9 @@ def isvalidboard(board):
 
 
 def getmoves(board, turn, roll, maxroll=6):
+    '''
+    Get list of legal moves for the board, given a turn and roll of the die
+    '''
     moves = []
     if roll == maxroll and \
         ((turn == 0 and board.redpen) or (turn == 1 and board.bluepen)):
