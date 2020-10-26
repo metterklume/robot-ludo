@@ -1,14 +1,12 @@
 (This [notebook](Robot-Ludo-Challenge.ipynb) contains all the code you need)
 
-   \* [The Rules](#the-rules)
+* [The Rules](#the-rules)
 
-​     \* [Example](#example)
+     * [Example](#example)
 
-   \* [Board and Move Formats](#board-and-move-formats)
-
-   \* [The Challenge](#the-challenge)
-
-​     \* [Example](#example-1)
+* [Board and Move Formats](#board-and-move-formats)
+* [The Challenge](#the-challenge)
+      * [Example](#example-1)
 
 ## The Rules
 
