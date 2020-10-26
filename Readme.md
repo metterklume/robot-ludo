@@ -1,4 +1,8 @@
-(Open the [notebook](Robot-Ludo-Challenge.ipynb) to run this code)
+(This [notebook](Robot-Ludo-Challenge.ipynb) contains all the code you need)
+
+
+
+[TOC]
 
 ## The Rules
 
@@ -68,7 +72,7 @@ drawboard(b2)
 
 
 
-Red to play, rolls **6**: Counter at 8 cannot go to 2, skipping past home, but a counter can come in from the pen. 
+Red to play, rolls **6**: Counter at 3 can go to 9, which will not cut the blue since 9 is a safe square. Or a counter can come in from the pen. Let's play the second move.
 
 
 ```python
@@ -100,24 +104,26 @@ drawboard(b4)
 
 ## Board and Move Formats
 
-The last board above is represented so: 
+A **board** is represented by a dataclass that stores
 
 
+    myboard = 
     Board(counters=6, length=12, safe=[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], red=[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], blue=[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], redpen=4, bluepen=4)
 
+Each of *safe*, *red* and *blue* are arrays of size *myboard.length* which is 12 in the above example. Safe squares are marked by 1, while red and blue contain the respective counters. 
 
 
-A regular move is a tuple *(turn, position, steps)*. Turn is 0 (red) and 1 (blue) and this move takes a counter at *position* forward by *steps*.
+A regular **move** is a tuple *(turn, position, steps)*. Turn is 0 (red) and 1 (blue) and the move takes a counter at *position* forward by *steps*.
 
 There are two special moves:
 
-   A. *(turn,0,0)* moves a counter from the pen to home. Valid iff the roll is maximum.
+   A. *(turn,0,0)* moves a counter from the pen to home. Valid if and only if the roll is maximum.
 
-   B. *(turn,-1,-1)* is a null move (do nothing/pass). Valid iff no other moves are possible.
+   B. *(turn,-1,-1)* is a null move (do nothing/pass). Valid if and only if no other moves are possible.
 
 ## The Challenge
 
-Write an engine that plays Robot Ludo. The inputs are the current board, the turn, and the roll of the die. The output is a move tuple.
+**Write an engine** to play Robot Ludo. The inputs for your engine are the current board, the turn, and the roll of the die. The expected output is a move tuple.
 
 For a single game the turn will be constant whenever your engine is called -- Red(0) or Blue(1) and the roll will chosen at random. The board will change in keeping with the moves made.   
 
@@ -138,6 +144,8 @@ def simple_player(board,turn,roll):
     mymove = moves[0]
     return mymove
 ```
+
+Note that ```getmoves``` is implemented for you!
 
 We can play a single match of this player against itself.
 
@@ -163,7 +171,7 @@ match(2,6,None,simple_player,simple_player,verbose=True)
     0 4 (0, -1, -1)
     1 2 (1, 1, 2)
     Cuts 2 Moves 38
-
+    
     1
 
 The output 1 means the second player won this match.
@@ -172,6 +180,7 @@ To get average winning fractions over a series of games:
 
 
 ```python
+# returns fraction of games won by each engine
 judge(10, 20, None, simple_player, simple_player, games=1000)
 ```
 
@@ -182,7 +191,7 @@ That is odd! The second player has a huge advantage. How could that possibly hap
 
 The answer is that our function for choosing the first valid move is *not symmetric* in the home positions for Red and Blue. We are taking the first moveable counter from 0 which would be the one closest to home for Red but further for Blue.
 
-To symmetrise this strategy, we have to consider the cases turn=0 and turn=1 separately.
+To symmetrize this strategy, we have to consider the cases turn=0 and turn=1 separately.
 
 
 ```python
