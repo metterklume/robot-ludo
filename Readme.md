@@ -5,8 +5,10 @@
      * [Example](#example)
 
 * [Board and Move Formats](#board-and-move-formats)
+
 * [The Challenge](#the-challenge)
-      * [Example](#example-1)
+
+     * [Example](#example-1)
 
 ## The Rules
 
