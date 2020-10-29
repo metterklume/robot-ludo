@@ -6,7 +6,7 @@ Created on Mon Oct 12 14:30:00 2020
 
 from dataclasses import dataclass
 import numpy as np
-from copy import deepcopy
+import copy
 
 @dataclass
 class Board:
@@ -21,13 +21,17 @@ class Board:
     redpen: int   # number of counters that are in the 'pen' 
     bluepen: int  # waiting to come into play
 
+    def __copy__(self):
+        return Board(counters=self.counters,length=self.length,safe=list(self.safe),red=list(self.red),blue=list(self.blue),
+        redpen=self.redpen,bluepen=self.bluepen)
+
 # move is in the form (turn, pos, steps)
 # turn = 0 for red, 1 for blue
 # Two special moves:
 # (turn, 0, 0) --> counter moves home from pen
 # (turn, -1, -1) --> Pass
 
-def makemove(board, move, copy=True):
+def makemove(board, move, copyboard=True):
     '''
     Make a move on the board. If *copy* then returns copy,
     else mutates current board.
@@ -36,8 +40,8 @@ def makemove(board, move, copy=True):
         print("Invalid move")
         return board
     
-    if copy:
-        newboard = deepcopy(board)
+    if copyboard:
+        newboard = copy.copy(board)
     else:
         newboard = board
 

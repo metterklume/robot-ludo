@@ -37,7 +37,7 @@ def match(counters,length,safesquares,player1,player2,maxiters=1000,starting=0,
         move = player(b,turn,roll)
         
         rp,bp = b.redpen,b.bluepen
-        b = makemove(b,move,copy=False)
+        b = makemove(b,move,copyboard=False)
         
         if verbose:
             print(turn,roll,move)
