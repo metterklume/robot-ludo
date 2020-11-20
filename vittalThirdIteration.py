@@ -1,5 +1,5 @@
 from state import Board, makemove, getmoves, isvalidboard, isvalidmove
-from draw import drawboard
+# from draw import drawboard
 from match import make_start_board, match, judge
 import numpy as np
 import random
